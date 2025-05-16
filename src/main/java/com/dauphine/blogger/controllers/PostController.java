@@ -1,5 +1,6 @@
 package com.dauphine.blogger.controllers;
 
+import com.dauphine.blogger.dto.CreationPostRequest;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("v1/posts")
+@RequestMapping("/v1/posts")
 public class PostController {
 
     private final PostService service;
@@ -21,6 +22,10 @@ public class PostController {
     }
 
     @GetMapping
+    @Operation(
+            summary = "Show all Posts ",
+            description = "Returns posts "
+    )
     public ResponseEntity<List<Post>> getAll() {
         List<Post> posts = service.getAll();
         return posts.isEmpty()
@@ -29,6 +34,10 @@ public class PostController {
     }
 
     @GetMapping("{id}")
+    @Operation(
+            summary = "Search posts by by",
+            description = "Returns specific post"
+    )
     public ResponseEntity<Post> getById(@PathVariable UUID id) {
         Post post = service.getById(id);
         return (post == null)
@@ -37,16 +46,24 @@ public class PostController {
     }
 
     @PostMapping
-    public ResponseEntity<Post> create(@RequestParam String title,
-                       @RequestParam String content,
-                       @RequestParam(required = false) UUID categoryId) {
-        Post created = (categoryId != null)
-                ? service.create(title, content, categoryId)
-                : service.create(title, content);
+    @Operation(
+            summary = "Create new post",
+            description = "create new post"
+    )
+    public ResponseEntity<Post> create(@RequestBody CreationPostRequest request) {
+        Post created = service.create(
+                request.getTitle(),
+                request.getContent(),
+                request.getCategoryId()
+        );
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
     }
 
     @PutMapping("{id}")
+    @Operation(
+            summary = "Modify posts by Id",
+            description = "Put change"
+    )
     public ResponseEntity<Post> update(@PathVariable UUID id,
                        @RequestBody Post updatedPost) {
         Post updated = service.update(id, updatedPost.getTitle(), updatedPost.getContent());
@@ -56,6 +73,10 @@ public class PostController {
     }
 
     @PutMapping("{id}/content")
+    @Operation(
+            summary = "Modify posts content by Id",
+            description = "Put change"
+    )
     public ResponseEntity<Post> updateContent(@PathVariable UUID id,
                               @RequestBody String newContent) {
         Post updated = service.updateContent(id, newContent);

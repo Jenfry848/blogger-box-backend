@@ -42,6 +42,10 @@ public class CategoryController {
 
 
     @GetMapping("{id}")
+    @Operation(
+            summary = "Get categories by ID",
+            description = "Retrieve categories or filter by name"
+    )
     public ResponseEntity<Category> retrieveCategoryById(@PathVariable UUID id) {
         Category category = service.getById(id);
         return (category == null)
@@ -61,6 +65,10 @@ public class CategoryController {
     }
 
     @PutMapping("{id}")
+    @Operation(
+            summary = "Modify categories",
+            description = "Write here"
+    )
     public ResponseEntity<Category> updateCategory(@PathVariable UUID id, @RequestBody String name) {
         Category updated = service.update(id, name);
         return (updated == null)
@@ -69,6 +77,10 @@ public class CategoryController {
     }
 
     @DeleteMapping("{id}")
+    @Operation(
+            summary = "Delete categories by Id",
+            description = "Delete"
+    )
     public ResponseEntity<Void> DeleteCategory(@PathVariable UUID id) {
         boolean deleted = service.deleteById(id);
         return deleted
