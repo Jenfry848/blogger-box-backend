@@ -22,4 +22,7 @@ public interface PostService {
     Post create(String title, String content);
 
     Post updateContent(UUID id, String newContent);
+
+    List<Post> searchByKeyword(String keyword);
+
 }

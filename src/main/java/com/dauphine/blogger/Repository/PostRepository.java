@@ -11,6 +11,8 @@ import java.util.List;
 public interface PostRepository extends JpaRepository<Post, UUID>{
     List<Post> findByCreatedDate(LocalDate date);
     List<Post> findByCategoryId(UUID categoryId);
+    List<Post> findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(String title, String content);
+
 }
 
 

@@ -5,8 +5,12 @@ import com.dauphine.blogger.dto.CreationCategoryRequest;
 import com.dauphine.blogger.models.Category;
 import com.dauphine.blogger.models.Post;
 import com.dauphine.blogger.service.CategoryService;
+import io.swagger.v3.oas.annotations.Operation;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.ArrayList;import java.util.List;
 import java.util.UUID;
 
@@ -22,27 +26,54 @@ public class CategoryController {
     }
 
     @GetMapping
-    public List<Category> retrieveAllCategories() {
-        return service.getAll();
+    @Operation(
+            summary = "Get all categories",
+            description = "Retrieve all categories or filter by name"
+    )
+    public ResponseEntity<List<Category>> getAll(@RequestParam(required = false) String name){
+        List<Category> categories = name == null || name.isBlank()
+                ? service.getAll()
+                : service.getAllLikeName(name);
+        return categories.isEmpty()
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.ok(categories);
     }
 
+
+
     @GetMapping("{id}")
-    public Category retrieveCategoryById(@PathVariable UUID id) {
-        return service.getById(id);
+    public ResponseEntity<Category> retrieveCategoryById(@PathVariable UUID id) {
+        Category category = service.getById(id);
+        return (category == null)
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(category);
     }
 
     @PostMapping
-    public Category createCategory(@RequestBody String name) {
-        return service.create(name);
+    @Operation(
+            summary = "Create new category",
+            description = "Create new category, only required field is the name of the category to create"
+    )
+    public ResponseEntity<Category> createCategory(@RequestBody String name) {
+        Category category = service.create(name);
+        return ResponseEntity.status(HttpStatus.CREATED).body(category);
+
     }
 
     @PutMapping("{id}")
-    public Category updateCategory(@PathVariable UUID id, @RequestBody String name) {
-        return service.update(id, name);
+    public ResponseEntity<Category> updateCategory(@PathVariable UUID id, @RequestBody String name) {
+        Category updated = service.update(id, name);
+        return (updated == null)
+                ? ResponseEntity.notFound().build()
+                : ResponseEntity.ok(updated);
     }
 
     @DeleteMapping("{id}")
-    public void DeleteCategory(@PathVariable UUID id) {
-        service.deleteById(id);
+    public ResponseEntity<Void> DeleteCategory(@PathVariable UUID id) {
+        boolean deleted = service.deleteById(id);
+        return deleted
+                ? ResponseEntity.noContent().build()
+                : ResponseEntity.notFound().build();
     }
+
 }

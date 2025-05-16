@@ -85,4 +85,10 @@ public class PostServiceImpl implements PostService {
         }
         return null;
     }
+
+    @Override
+    public List<Post> searchByKeyword(String keyword) {
+        return repository.findByTitleContainingIgnoreCaseOrContentContainingIgnoreCase(keyword, keyword);
+    }
+
 }

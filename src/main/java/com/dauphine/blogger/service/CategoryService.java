@@ -16,5 +16,6 @@ public interface CategoryService {
 
     boolean deleteById(UUID id);
 
+    List<Category> getAllLikeName(String name);
 
 }
